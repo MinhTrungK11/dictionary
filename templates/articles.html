@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>Mini Finance - Article Data Page</title>
+
+        <!-- CSS FILES -->      
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;700&display=swap" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/bootstrap-icons.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/apexcharts.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/tooplate-mini-finance.css') }}" rel="stylesheet">
+
+        <!-- Custom CSS for fixed filter form and clickable rows -->
+        <style>
+            body {
+                font-family: 'Roboto', sans-serif;
+                background-color: #f8f9fa;
+            }
+            .sidebar .nav-link {
+                font-family: 'Unbounded', cursive;
+                font-size: 16px;
+                font-weight: 400;
+            }
+            .filter-form {
+                position: sticky;
+                top: 60px;
+                z-index: 1000;
+                margin-bottom: 20px;
+                padding: 15px;
+                background-color: #f8f9fa;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .filter-form label {
+                font-weight: 500;
+                margin-bottom: 5px;
+                display: block;
+            }
+            .filter-form .form-control {
+                margin-bottom: 10px;
+                height: 38px;
+                padding: 6px 12px;
+            }
+            .filter-form .btn-filter {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                height: 38px;
+                width: 80px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+                margin-bottom: 10px;
+            }
+            .filter-form .btn-filter:hover {
+                background-color: #0056b3;
+            }
+            .filter-form .row {
+                display: flex;
+                align-items: flex-end;
+            }
+            .filter-form .col-md-3 {
+                display: flex;
+                flex-direction: column;
+            }
+            .main-wrapper {
+                padding-top: 20px;
+            }
+            .account-table tr {
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+            .account-table tr:hover {
+                background-color: #f1f1f1;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <header class="navbar sticky-top flex-md-nowrap">
+            <div class="col-md-3 col-lg-3 me-0 px-3 fs-6">
+                <a class="navbar-brand" href="{{ url_for('index') }}">
+                    <i class="bi-box"></i>
+                    Mini Finance
+                </a>
+            </div>
+            <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <form class="custom-form header-form ms-lg-3 ms-md-3 me-lg-auto me-md-auto order-2 order-lg-0 order-md-0" action="#" method="get" role="form">
+                <input class="form-control" name="search" type="text" placeholder="Search" value="{{ search }}" aria-label="Search">
+            </form>
+            <div class="navbar-nav me-lg-2">
+                <div class="nav-item text-nowrap d-flex align-items-center"></div>
+            </div>
+        </header>
+
+        <div class="container-fluid">
+            <div class="row">
+                <nav id="sidebarMenu" class="col-md-3 col-lg-3 d-md-block sidebar collapse">
+                    <div class="position-sticky py-4 px-3 sidebar-sticky">
+                        <ul class="nav flex-column h-100">
+                            <li class="nav-item">
+                                <a class="nav-link" aria-current="page" href="{{ url_for('index') }}">
+                                    <i class="bi-house-fill me-2"></i>
+                                    Overview
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{{ url_for('articles') }}">
+                                    <i class="bi-wallet me-2"></i>
+                                    Article Data
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('profile') }}">
+                                    <i class="bi-person me-2"></i>
+                                    Content Detail
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('analyst') }}">
+                                    <i class="bi-gear me-2"></i>
+                                    Anaylist
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <main class="main-wrapper col-md-9 ms-sm-auto py-4 col-lg-9 px-md-4 border-start">
+                    <div class="title-group mb-3">
+                        <h1 class="h2 mb-0">Article Data</h1>
+                    </div>
+
+                    <div class="row my-4">
+                        <div class="col-lg-12 col-12">
+                            <div class="custom-block bg-white">
+                                <h5 class="mb-4">Danh sách bài báo</h5>
+
+                                <!-- Filter Form -->
+                                <form class="filter-form" action="{{ url_for('articles') }}" method="get">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <label for="category_level1">Danh mục cấp 1:</label>
+                                            <select name="category_level1" id="category_level1" class="form-control">
+                                                <option value="">Tất cả</option>
+                                                {% for cat in all_categories %}
+                                                    <option value="{{ cat }}" {% if category_level1 == cat %}selected{% endif %}>{{ cat }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="pub_date_from">Từ ngày:</label>
+                                            <input type="date" name="pub_date_from" id="pub_date_from" class="form-control" value="{{ pub_date_from }}">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="pub_date_to">Đến ngày:</label>
+                                            <input type="date" name="pub_date_to" id="pub_date_to" class="form-control" value="{{ pub_date_to }}">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>&nbsp;</label>
+                                            <button type="submit" class="btn btn-filter">Lọc</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <!-- Table -->
+                                <div class="table-responsive">
+                                    <table class="account-table table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Id</th>
+                                                <th scope="col">Title</th>
+                                                <th scope="col">Author</th>
+                                                <th scope="col">Publication Date</th>
+                                                <th scope="col">Category Level 1</th>
+                                                <th scope="col">Category Level 2</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for transaction in transactions %}
+                                            <tr onclick="window.location='{{ url_for('profile', title=transaction.title | urlencode, author=transaction.author | urlencode, pub_date=transaction.pub_date | urlencode, content=transaction.content | urlencode, article_url=transaction.article_url | urlencode) }}'">
+                                                <td>{{ transaction.id }}</td>
+                                                <td>{{ transaction.title }}</td>
+                                                <td>{{ transaction.author }}</td>
+                                                <td>{{ transaction.pub_date }}</td>
+                                                <td>{{ transaction.category_level1 }}</td>
+                                                <td>{{ transaction.category_level2 }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Pagination -->
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center mb-0">
+                                        {% if pagination.has_prev %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ url_for('articles', page=pagination.prev_num, search=search, category_level1=category_level1, pub_date_from=pub_date_from, pub_date_to=pub_date_to) }}">Prev</a>
+                                        </li>
+                                        {% endif %}
+
+                                        {% for page_num in pagination.iter_pages() %}
+                                            {% if page_num %}
+                                                {% if page_num == pagination.page %}
+                                                <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                                                {% else %}
+                                                <li class="page-item">
+                                                    <a class="page-link" href="{{ url_for('articles', page=page_num, search=search, category_level1=category_level1, pub_date_from=pub_date_from, pub_date_to=pub_date_to) }}">{{ page_num }}</a>
+                                                </li>
+                                                {% endif %}
+                                            {% else %}
+                                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if pagination.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ url_for('articles', page=pagination.next_num, search=search, category_level1=category_level1, pub_date_from=pub_date_from, pub_date_to=pub_date_to) }}">Next</a>
+                                        </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <footer class="site-footer">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-12 col-12">
+                                    <p class="copyright-text">Copyright © Mini Finance 2048 
+                                    - Design: <a rel="sponsored" href="https://www.tooplate.com" target="_blank">Tooplate</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </main>
+            </div>
+        </div>
+
+        <!-- JAVASCRIPT FILES -->
+        <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/apexcharts.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+    </body>
+</html>

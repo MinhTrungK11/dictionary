@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>Mini Finance - Analyst</title>
+
+        <!-- CSS FILES -->      
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/bootstrap-icons.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/apexcharts.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/tooplate-mini-finance.css') }}" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <style>
+            body {
+                font-family: 'Roboto', sans-serif;
+                background-color: #f8f9fa;
+            }
+            .sidebar .nav-link {
+                font-family: 'Unbounded', cursive;
+                font-size: 16px;
+                font-weight: 400;
+            }
+            .main-wrapper {
+                padding: 20px 40px;
+            }
+            .content-container {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+                max-height: 400px;
+                overflow-y: auto;
+                margin-bottom: 20px;
+            }
+            .content-container h3 {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #2c3e50;
+                margin-bottom: 15px;
+            }
+            .content-container p {
+                font-size: 1rem;
+                line-height: 1.6;
+                color: #34495e;
+            }
+            .analysis-metrics {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .metric-item {
+                background-color: #fff;
+                border: 1px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 15px;
+                cursor: pointer;
+                transition: background-color 0.3s, transform 0.2s;
+                display: flex;
+                align-items: center;
+            }
+            .metric-item:hover {
+                background-color: #f1f1f1;
+                transform: translateY(-2px);
+            }
+            .metric-item span.number {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #2c3e50;
+                margin-right: 15px;
+                width: 30px;
+                text-align: center;
+            }
+            .metric-item h5 {
+                font-size: 1.1rem;
+                font-weight: 600;
+                color: #2c3e50;
+                margin: 0;
+            }
+            .nav-link.active {
+                background-color: #dc3545 !important;
+                color: #fff !important;
+                font-weight: 600;
+            }
+            .nav-link.active i {
+                color: #fff !important;
+            }
+            .site-footer {
+                text-align: center;
+                font-size: 0.85rem;
+                color: #666;
+                padding-top: 20px;
+                border-top: 1px solid #e0e0e0;
+            }
+            .metric-dropdown {
+                border: 1px solid #dadce0;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                overflow: hidden;
+            }
+            .metric-header {
+                background-color: #f1f3f4;
+                padding: 12px 16px;
+                cursor: pointer;
+                font-weight: 500;
+                color: #202124;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: 16px;
+            }
+            .metric-header:hover {
+                background-color: #e8eaed;
+            }
+            .metric-arrow {
+                transition: transform 0.2s ease-in-out;
+            }
+            .metric-header.open .metric-arrow {
+                transform: rotate(180deg);
+            }
+            .metric-body {
+                padding: 12px 16px;
+                display: none;
+                background-color: white;
+                color: #202124;
+                font-size: 15px;
+                line-height: 1.6;
+            }
+            .frequency-list {
+                max-height: 200px;
+                overflow-y: auto;
+                padding-right: 10px;
+            }
+            .frequency-list::-webkit-scrollbar {
+                width: 6px;
+            }
+            .frequency-list::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 3px;
+            }
+            .frequency-list::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 3px;
+            }
+            .frequency-list::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <header class="navbar sticky-top flex-md-nowrap">
+            <div class="col-md-3 col-lg-3 me-0 px-3 fs-6">
+                <a class="navbar-brand" href="{{ url_for('index') }}">
+                    <i class="bi-box"></i>
+                    Mini Finance
+                </a>
+            </div>
+            <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <form class="custom-form header-form ms-lg-3 ms-md-3 me-lg-auto me-md-auto order-2 order-lg-0 order-md-0" action="#" method="get" role="form">
+                <input class="form-control" name="search" type="text" placeholder="Search" aria-label="Search">
+            </form>
+            <div class="navbar-nav me-lg-2">
+                <div class="nav-item text-nowrap d-flex align-items-center"></div>
+            </div>
+        </header>
+
+        <div class="container-fluid">
+            <div class="row">
+                <nav id="sidebarMenu" class="col-md-3 col-lg-3 d-md-block sidebar collapse">
+                    <div class="position-sticky py-4 px-3 sidebar-sticky">
+                        <ul class="nav flex-column h-100">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('index') }}">
+                                    <i class="bi-house-fill me-2"></i>
+                                    Overview
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('articles') }}">
+                                    <i class="bi-wallet me-2"></i>
+                                    Article Data
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('profile') }}">
+                                    <i class="bi-person me-2"></i>
+                                    Content Detail
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{{ url_for('analyst') }}">
+                                    <i class="bi-gear me-2"></i>
+                                    Analyst
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <main class="main-wrapper col-md-9 ms-sm-auto py-4 col-lg-9 px-md-4 border-start">
+                    <div class="title-group mb-3">
+                        <h1 class="h2 mb-0">Analyst</h1>
+                    </div>
+
+                    <!-- Scrollable Content Area -->
+                    <div class="content-container">
+                        <h3>{{ title | safe }}</h3>
+                        <p>{{ content | safe }}</p>
+                    </div>
+
+                    <!-- Analysis Metrics -->
+                    <div class="analysis-metrics">
+                        <div class="metric-dropdown">
+                            <div class="metric-header" onclick="toggleDropdown(this, 'char-count')">
+                                1. Số ký tự
+                                <span class="metric-arrow">▾</span>
+                            </div>
+                            <div class="metric-body" id="char-count"></div>
+                        </div>
+                        <div class="metric-dropdown">
+                            <div class="metric-header" onclick="toggleDropdown(this, 'word-count')">
+                                2. Số ký tự đặc biệt
+                                <span class="metric-arrow">▾</span>
+                            </div>
+                            <div class="metric-body" id="word-count"></div>
+                        </div>
+                        <div class="metric-dropdown">
+                            <div class="metric-header" onclick="toggleDropdown(this, 'single-word-count')">
+                                3. Số từ đơn
+                                <span class="metric-arrow">▾</span>
+                            </div>
+                            <div class="metric-body" id="single-word-count"></div>
+                        </div>
+                        <div class="metric-dropdown">
+                            <div class="metric-header" onclick="toggleDropdown(this, 'compound-word-count')">
+                                4. Số từ ghép
+                                <span class="metric-arrow">▾</span>
+                            </div>
+                            <div class="metric-body">Chức năng đang phát triển...</div>
+                        </div>
+                        <div class="metric-dropdown">
+                            <div class="metric-header" onclick="toggleDropdown(this, 'entities')">
+                                5. Thực Thể
+                                <span class="metric-arrow">▾</span>
+                            </div>
+                            <div class="metric-body">Chức năng đang phát triển...</div>
+                        </div>
+                    </div>
+
+                    <footer class="site-footer">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-12 col-12">
+                                    <p class="copyright-text">Copyright © Mini Finance 2048 
+                                    - Design: <a rel="sponsored" href="https://www.tooplate.com" target="_blank">Tooplate</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </main>
+            </div>
+        </div>
+
+        <!-- JAVASCRIPT FILES -->
+        <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/apexcharts.min.js') }}" defer></script>
+        <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
+        <script>
+            async function toggleDropdown(header, metric) {
+                const isOpen = header.classList.contains('open');
+        
+                document.querySelectorAll('.metric-header').forEach(h => h.classList.remove('open'));
+                document.querySelectorAll('.metric-body').forEach(b => b.style.display = 'none');
+        
+                if (isOpen) return;
+        
+                header.classList.add('open');
+                const body = header.nextElementSibling;
+                body.style.display = 'block';
+        
+                if (!['char-count', 'word-count', 'single-word-count', 'compound-word-count', 'entities'].includes(metric)) return;
+
+        
+                const title = document.querySelector('h3').innerText;
+                const content = document.querySelector('p').innerText;
+        
+                let url;
+                if (metric === 'char-count') {
+                    url = '/api/analyze/basic';
+                } else if (metric === 'word-count') {
+                    url = '/api/analyze/special';
+                } else if (metric === 'single-word-count') {
+                    url = '/api/analyze/single-words';
+                }
+                else if (metric === 'compound-word-count') {
+                    url = '/api/analyze/compound-words';
+                }
+                else if (metric === 'entities') {
+                    url = '/api/analyze/entities';
+                }
+                
+        
+                try {
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title, content })
+                    });
+                    const data = await res.json();
+        
+                    if (metric === 'char-count') {
+                        body.innerHTML = `
+                            <div><strong>Tổng ký tự:</strong> ${data.total_characters}</div>
+                            <div><strong>Tổng từ:</strong> ${data.total_words}</div>
+                            <div><strong>Từ riêng biệt:</strong> ${data.unique_words}</div>
+                        `;
+                    } else if (metric === 'word-count') {
+                        let freqHtml = '<ul style="padding-left: 20px;">';
+                        for (const [char, count] of Object.entries(data.special_character_frequencies)) {
+                            freqHtml += `<li><strong>${char}</strong>: ${count}</li>`;
+                        }
+                        freqHtml += '</ul>';
+                        body.innerHTML = `
+                            <div><strong>Số ký tự đặc biệt:</strong> ${data.special_character_count}</div>
+                            <div><strong>Tần suất từng ký tự:</strong>${freqHtml}</div>
+                        `;
+                    } else if (metric === 'single-word-count') {
+                        let freqHtml = '<ul class="frequency-list">';
+                        for (const [word, count] of data.single_word_frequencies) {
+                            freqHtml += `<li>${word}: ${count}</li>`;
+                        }
+                        freqHtml += '</ul>';
+                        body.innerHTML = `
+                            <div><strong>Số từ đơn:</strong> ${data.single_word_count}</div>
+                            <div><strong>Tần suất từng từ:</strong>${freqHtml}</div>
+                        `;
+                    }
+                    else if (metric === 'compound-word-count') {
+                        let freqHtml = '<ul class="frequency-list">';
+                        for (const [word, count] of data.compound_word_frequencies) {
+                            freqHtml += `<li>${word}: ${count}</li>`;
+                        }
+                        freqHtml += '</ul>';
+                        body.innerHTML = `
+                            <div><strong>Số từ ghép:</strong> ${data.compound_word_count}</div>
+                            <div><strong>Tần suất từng từ:</strong>${freqHtml}</div>
+                        `;
+                    }
+                    else if (metric === 'entities') {
+                        let html = '';
+                        for (const label in data) {
+                            html += `<div><strong>${label}</strong>:</div><ul class="frequency-list">`;
+                            for (const entity of data[label]) {
+                                html += `<li>${entity}</li>`;
+                            }
+                            html += '</ul>';
+                        }
+                        body.innerHTML = html;
+                    }
+                    
+                    
+                } catch (err) {
+                    body.innerHTML = '<div class="text-danger">Lỗi khi phân tích</div>';
+                }
+            }
+        </script>
+    </body>
+</html>

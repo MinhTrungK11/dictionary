@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <meta name="description" content="">
+        <meta name="author" content="Tooplate">
+
+        <title>Mini Finance Overview</title>
+
+        <!-- CSS FILES -->      
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;700&display=swap" rel="stylesheet">
+        <link href="static/css/bootstrap.min.css" rel="stylesheet">
+        <link href="static/css/bootstrap-icons.css" rel="stylesheet">
+        <link href="static/css/apexcharts.css" rel="stylesheet">
+        <link href="static/css/tooplate-mini-finance.css" rel="stylesheet">
+
+        <!-- Custom CSS for white background -->
+        <style>
+          body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8f9fa;
+              }
+            .sidebar .nav-link {
+              font-family: 'Unbounded', cursive;
+              font-size: 16px;
+              font-weight: 400;
+            }
+            body {
+                background-color: #ffffff;
+            }
+            .container-fluid, .main-wrapper, .sidebar {
+                background-color: #ffffff;
+            }
+            .overview-content {
+                padding: 20px;
+                border-radius: 8px;
+                background-color: #f8f9fa;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .overview-content h2 {
+                color: #2c3e50;
+                font-weight: 700;
+                margin-bottom: 15px;
+            }
+            .overview-content p, .overview-content li {
+                color: #34495e;
+                line-height: 1.6;
+            }
+            .overview-content a {
+                color: #007bff;
+                text-decoration: none;
+            }
+            .overview-content a:hover {
+                text-decoration: underline;
+            }
+            .overview-content pre {
+                background-color: #e9ecef;
+                padding: 10px;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <header class="navbar sticky-top flex-md-nowrap">
+            <div class="col-md-3 col-lg-3 me-0 px-3 fs-6">
+                <a class="navbar-brand" href="index.html">
+                    <i class="bi-box"></i>
+                    Mini Finance
+                </a>
+            </div>
+            <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <form class="custom-form header-form ms-lg-3 ms-md-3 me-lg-auto me-md-auto order-2 order-lg-0 order-md-0" action="#" method="get" role="form">
+                <input class="form-control" name="search" type="text" placeholder="Search" aria-label="Search">
+            </form>
+            <div class="navbar-nav me-lg-2">
+                <div class="nav-item text-nowrap d-flex align-items-center"></div>
+            </div>
+        </header>
+
+        <div class="container-fluid">
+            <div class="row">
+                <nav id="sidebarMenu" class="col-md-3 col-lg-3 d-md-block sidebar collapse">
+                    <div class="position-sticky py-4 px-3 sidebar-sticky">
+                        <ul class="nav flex-column h-100">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="{{ url_for('index') }}">
+                                    <i class="bi-house-fill me-2"></i>
+                                    Overview
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('articles') }}">
+                                    <i class="bi-wallet me-2"></i>
+                                    Article Data
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('profile') }}">
+                                    <i class="bi-person me-2"></i>
+                                    Content Detail
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('analyst') }}">
+                                    <i class="bi-gear me-2"></i>
+                                    Anaylist
+                                </a>
+                            </li>
+                            <li class="nav-item border-top mt-auto pt-2"></li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <main class="main-wrapper col-md-9 ms-sm-auto py-4 col-lg-9 px-md-4 border-start">
+                    <div class="title-group mb-3">
+                        <h1 class="h2 mb-0">Overview</h1>
+                    </div>
+                    <div class="overview-content">
+                        <h2>Khám phá Mini Finance</h2>
+                        <p><strong>Mini Finance</strong> là một ứng dụng web thông minh, giúp phân tích bài viết và xây dựng bộ từ điển chuyên biệt với giao diện thân thiện và công cụ mạnh mẽ. Sử dụng Flask, PostgreSQL và Bootstrap, ứng dụng mang đến trải nghiệm mượt mà và trực quan. Các tính năng nổi bật bao gồm:</p>
+                        <ul>
+                            <li><strong>Tổng quan</strong>: Cung cấp hướng dẫn sử dụng và giới thiệu tổng quát về ứng dụng.</li>
+                            <li><strong>Dữ liệu bài viết</strong>: Quản lý danh sách bài viết với thông tin chi tiết (ID, ngày, liên kết, mô tả) và hỗ trợ phân trang.</li>
+                            <li><strong>Phân tích chuyên sâu</strong>: Phân tích nội dung bài viết bằng thư viện <code>underthesea</code>, đếm ký tự, từ, cụm từ có nghĩa, và hỗ trợ ghép từ thủ công để xây dựng từ điển.</li>
+                            <li><strong>Quản lý từ khóa</strong>: Lưu trữ từ khóa với loại từ và ghi chú, tối ưu hóa việc phân loại và tra cứu.</li>
+                            <li><strong>Giao diện hiện đại</strong>: Thiết kế responsive, tích hợp thanh điều hướng tiện lợi.</li>
+                        </ul>
+
+                        <h2>Hướng dẫn triển khai</h2>
+                        <p>Để chạy Mini Finance trên máy cục bộ, thực hiện các bước sau:</p>
+                        <ol>
+                            <li><strong>Yêu cầu</strong>: Python 3.6+, PostgreSQL, và các thư viện <code>flask</code>, <code>flask_sqlalchemy</code>, <code>underthesea</code>, <code>psycopg2</code>.</li>
+                            <li><strong>Chuẩn bị môi trường</strong>:
+                                <ul>
+                                    <li>Sao chép các file <code>app.py</code>, <code>index.html</code>, <code>articles.html</code>, <code>profile.html</code> vào thư mục dự án.</li>
+                                    <li>Tạo thư mục <code>static</code> và <code>templates</code> cho CSS, JS, và HTML.</li>
+                                    <li>Cài đặt: <code>pip install flask flask_sqlalchemy underthesea psycopg2-binary</code>.</li>
+                                </ul>
+                            </li>
+                            <li><strong>Cấu hình PostgreSQL</strong>:
+                                <ul>
+                                    <li>Đăng nhập: <code>psql -U postgres</code>.</li>
+                                    <li>Tạo database: <code>CREATE DATABASE postgres;</code>.</li>
+                                    <li>Tạo bảng:
+                                        <pre>
+CREATE TABLE wallet (
+    id SERIAL PRIMARY KEY,
+    date VARCHAR(50) NOT NULL,
+    time VARCHAR(20) NOT NULL,
+    link VARCHAR(255),
+    description TEXT
+);
+CREATE TABLE keyword (
+    id SERIAL PRIMARY KEY,
+    word VARCHAR(255) UNIQUE NOT NULL,
+    loai_tu VARCHAR(50),
+    ghi_chu TEXT
+);
+                                        </pre>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><strong>Cấu hình ứng dụng</strong>: Cập nhật chuỗi kết nối trong <code>app.py</code> (ví dụ: <code>postgresql://postgres:220201@localhost:5432/postgres</code>).</li>
+                            <li><strong>Khởi chạy</strong>: Chạy <code>python app.py</code> và truy cập <code>http://127.0.0.1:5000</code>.</li>
+                            <li><strong>Khám phá</strong>: Điều hướng đến <a href="{{ url_for('articles') }}">Article Data</a> hoặc <a href="{{ url_for('profile') }}">Analysis</a> để trải nghiệm.</li>
+                        </ol>
+                        <p><strong>Lưu ý</strong>:
+                            <ul>
+                                <li>Đảm bảo PostgreSQL đang hoạt động.</li>
+                                <li>Thêm dữ liệu mẫu: <code>INSERT INTO wallet (date, time, link, description) VALUES ('2025-04-17', '10:30', 'https://example.com', 'Mua sắm tại siêu thị Coopmart');</code>.</li>
+                            </ul>
+                        </p>
+                    </div>
+
+                    <footer class="site-footer">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-12 col-12">
+                                    <p class="copyright-text">Copyright © Mini Finance 2048 
+                                    - Design: <a rel="sponsored" href="https://www.tooplate.com" target="_blank">Tooplate</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </main>
+            </div>
+        </div>
+
+        <!-- JAVASCRIPT FILES -->
+        <script src="js/jquery.min.js"></script>
+        <script src="js/bootstrap.bundle.min.js"></script>
+        <script src="js/apexcharts.min.js"></script>
+        <script src="js/custom.js"></script>
+
+        <script type="text/javascript">
+            var options = {
+              series: [13, 43, 22],
+              chart: {
+              width: 380,
+              type: 'pie',
+            },
+            labels: ['Balance', 'Expense', 'Credit Loan'],
+            responsive: [{
+              breakpoint: 480,
+              options: {
+                chart: {
+                  width: 200
+                },
+                legend: {
+                  position: 'bottom'
+                }
+              }
+            }]
+            };
+            var chart = new ApexCharts(document.querySelector("#pie-chart"), options);
+            chart.render();
+        </script>
+
+        <script type="text/javascript">
+            var options = {
+              series: [{
+              name: 'Income',
+              data: [44, 55, 57, 56, 61, 58, 63, 60, 66]
+            }, {
+              name: 'Expense',
+              data: [76, 85, 101, 98, 87, 105, 91, 114, 94]
+            }, {
+              name: 'Transfer',
+              data: [35, 41, 36, 26, 45, 48, 52, 53, 41]
+            }],
+              chart: {
+              type: 'bar',
+              height: 350
+            },
+            plotOptions: {
+              bar: {
+                horizontal: false,
+                columnWidth: '55%',
+                endingShape: 'rounded'
+              },
+            },
+            dataLabels: {
+              enabled: false
+            },
+            stroke: {
+              show: true,
+              width: 2,
+              colors: ['transparent']
+            },
+            xaxis: {
+              categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+            },
+            yaxis: {
+              title: {
+                text: '$ (thousands)'
+              }
+            },
+            fill: {
+              opacity: 1
+            },
+            tooltip: {
+              y: {
+                formatter: function (val) {
+                  return "$ " + val + " thousands"
+                }
+              }
+            }
+            };
+            var chart = new ApexCharts(document.querySelector("#chart"), options);
+            chart.render();
+        </script>
+    </body>
+</html>
