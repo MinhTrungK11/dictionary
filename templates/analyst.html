@@ -252,7 +252,25 @@
                                 5. Thực Thể
                                 <span class="metric-arrow">▾</span>
                             </div>
-                            <div class="metric-body">Chức năng đang phát triển...</div>
+                            <div class="metric-body" id="entities">
+                                <div class="metric-dropdown">
+                                    <div class="metric-header" onclick="toggleEntity(this, 'PER')">5.1. Người (PER) <span class="metric-arrow">▾</span></div>
+                                    <div class="metric-body entity-body" id="entity-PER">Đang tải...</div>
+                                </div>
+                                <div class="metric-dropdown">
+                                    <div class="metric-header" onclick="toggleEntity(this, 'LOC')">5.2. Địa điểm (LOC) <span class="metric-arrow">▾</span></div>
+                                    <div class="metric-body entity-body" id="entity-LOC">Đang tải...</div>
+                                </div>
+                                <div class="metric-dropdown">
+                                    <div class="metric-header" onclick="toggleEntity(this, 'ORG')">5.3. Tổ chức (ORG) <span class="metric-arrow">▾</span></div>
+                                    <div class="metric-body entity-body" id="entity-ORG">Đang tải...</div>
+                                </div>
+                                <div class="metric-dropdown">
+                                    <div class="metric-header" onclick="toggleEntity(this, 'MISC')">5.4. Khác (MISC) <span class="metric-arrow">▾</span></div>
+                                    <div class="metric-body entity-body" id="entity-MISC">Đang tải...</div>
+                                </div>
+                            </div>
+                            
                         </div>
                     </div>
 
@@ -356,24 +374,65 @@
                             <div><strong>Số từ ghép:</strong> ${data.compound_word_count}</div>
                             <div><strong>Tần suất từng từ:</strong>${freqHtml}</div>
                         `;
-                    }
-                    else if (metric === 'entities') {
-                        let html = '';
-                        for (const label in data) {
-                            html += `<div><strong>${label}</strong>:</div><ul class="frequency-list">`;
-                            for (const entity of data[label]) {
-                                html += `<li>${entity}</li>`;
-                            }
-                            html += '</ul>';
-                        }
-                        body.innerHTML = html;
-                    }
-                    
+                    } 
                     
                 } catch (err) {
                     body.innerHTML = '<div class="text-danger">Lỗi khi phân tích</div>';
                 }
             }
         </script>
+        <script>
+            let entityDataCache = null;
+        
+            async function toggleEntity(header, label) {
+                const isOpen = header.classList.contains('open');
+                
+                document.querySelectorAll('.entity-body').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.metric-header').forEach(el => el.classList.remove('open'));
+        
+                if (isOpen) return;
+        
+                header.classList.add('open');
+                const body = document.getElementById('entity-' + label);
+                body.style.display = 'block';
+        
+                if (entityDataCache) {
+                    renderEntityData(body, entityDataCache[label]);
+                    return;
+                }
+        
+                const title = document.querySelector('h3').innerText;
+                const content = document.querySelector('p').innerText;
+        
+                try {
+                    const res = await fetch('/api/analyze/entities', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title, content })
+                    });
+                    const data = await res.json();
+                    entityDataCache = data;
+        
+                    renderEntityData(body, data[label]);
+                } catch (err) {
+                    body.innerHTML = '<div class="text-danger">Lỗi khi phân tích</div>';
+                }
+            }
+        
+            function renderEntityData(container, dataList) {
+                if (!dataList || dataList.length === 0) {
+                    container.innerHTML = '<div>Không có thực thể nào.</div>';
+                    return;
+                }
+        
+                let html = '<ul class="frequency-list">';
+                for (const entity of dataList) {
+                    html += `<li>${entity}</li>`;
+                }
+                html += '</ul>';
+                container.innerHTML = html;
+            }
+        </script>
+        
     </body>
 </html>
