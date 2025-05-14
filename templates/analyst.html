@@ -50,6 +50,12 @@
                 line-height: 1.6;
                 color: #34495e;
             }
+            .highlight {
+                background-color: #333;
+                color: #fff;
+                padding: 2px 4px;
+                border-radius: 3px;
+            }
             .analysis-metrics {
                 display: flex;
                 flex-direction: column;
@@ -151,6 +157,18 @@
             .frequency-list::-webkit-scrollbar-thumb:hover {
                 background: #555;
             }
+            .save-button {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 8px 16px;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+            .save-button:hover {
+                background-color: #0056b3;
+            }
         </style>
     </head>
     
@@ -214,7 +232,7 @@
                     <!-- Scrollable Content Area -->
                     <div class="content-container">
                         <h3>{{ title | safe }}</h3>
-                        <p>{{ content | safe }}</p>
+                        <p id="article-content">{{ content | safe }}</p>
                     </div>
 
                     <!-- Analysis Metrics -->
@@ -238,14 +256,29 @@
                                 3. Số từ đơn
                                 <span class="metric-arrow">▾</span>
                             </div>
-                            <div class="metric-body" id="single-word-count"></div>
+                            <div class="metric-body" id="single-word-count">
+                                <div><strong>Số từ đơn:</strong> <span id="single-word-total">0</span></div>
+                                <div><strong>Tần suất từng từ:</strong>
+                                    <ul class="frequency-list" id="single-word-list"></ul>
+                                </div>
+                                <button class="save-button" onclick="saveSingleWords()">Lưu từ đơn</button>
+                                <a href="{{ url_for('add_single_word', title=title | urlencode, content=content | urlencode, article_id=article_id | urlencode) }}" class="save-button">Thêm thủ công</a>
+                            </div>
                         </div>
                         <div class="metric-dropdown">
                             <div class="metric-header" onclick="toggleDropdown(this, 'compound-word-count')">
                                 4. Số từ ghép
                                 <span class="metric-arrow">▾</span>
                             </div>
-                            <div class="metric-body">Chức năng đang phát triển...</div>
+                                <!-- Trong phần metric-body của compound-word-count -->
+                                <div class="metric-body" id="compound-word-count">
+                                    <div><strong>Số từ ghép:</strong> <span id="compound-word-total">0</span></div>
+                                    <div><strong>Tần suất từng từ:</strong>
+                                        <ul class="frequency-list" id="compound-word-list"></ul>
+                                    </div>
+                                    <button class="save-button" onclick="saveCompoundWords()">Lưu từ ghép</button>
+                                    <a href="{{ url_for('add_compound_word', title=title | urlencode, content=content | urlencode, article_id=article_id | urlencode) }}" class="save-button">Thêm thủ công</a>
+                                </div>
                         </div>
                         <div class="metric-dropdown">
                             <div class="metric-header" onclick="toggleDropdown(this, 'entities')">
@@ -254,29 +287,61 @@
                             </div>
                             <div class="metric-body" id="entities">
                                 <div class="metric-dropdown">
-                                    <div class="metric-header" onclick="toggleEntity(this, 'PER')">5.1. Người (PER) <span class="metric-arrow">▾</span></div>
-                                    <div class="metric-body entity-body" id="entity-PER">Đang tải...</div>
+                                    <div class="metric-header" onclick="toggleEntity(this, 'PER')">
+                                        5.1. Người (PER) <span class="metric-arrow">▾</span>
+                                    </div>
+                                    <div class="metric-body entity-body" id="entity-PER">
+                                        <div><strong>Số thực thể:</strong> <span id="per-total">0</span></div>
+                                        <div><strong>Tần suất từng thực thể:</strong>
+                                            <ul class="frequency-list" id="per-list"></ul>
+                                        </div>
+                                        <button class="save-button" onclick="saveEntities('PER')">Lưu thực thể</button>
+                                    </div>
                                 </div>
                                 <div class="metric-dropdown">
-                                    <div class="metric-header" onclick="toggleEntity(this, 'LOC')">5.2. Địa điểm (LOC) <span class="metric-arrow">▾</span></div>
-                                    <div class="metric-body entity-body" id="entity-LOC">Đang tải...</div>
+                                    <div class="metric-header" onclick="toggleEntity(this, 'LOC')">
+                                        5.2. Địa điểm (LOC) <span class="metric-arrow">▾</span>
+                                    </div>
+                                    <div class="metric-body entity-body" id="entity-LOC">
+                                        <div><strong>Số thực thể:</strong> <span id="loc-total">0</span></div>
+                                        <div><strong>Tần suất từng thực thể:</strong>
+                                            <ul class="frequency-list" id="loc-list"></ul>
+                                        </div>
+                                        <button class="save-button" onclick="saveEntities('LOC')">Lưu thực thể</button>
+                                    </div>
                                 </div>
                                 <div class="metric-dropdown">
-                                    <div class="metric-header" onclick="toggleEntity(this, 'ORG')">5.3. Tổ chức (ORG) <span class="metric-arrow">▾</span></div>
-                                    <div class="metric-body entity-body" id="entity-ORG">Đang tải...</div>
+                                    <div class="metric-header" onclick="toggleEntity(this, 'ORG')">
+                                        5.3. Tổ chức (ORG) <span class="metric-arrow">▾</span>
+                                    </div>
+                                    <div class="metric-body entity-body" id="entity-ORG">
+                                        <div><strong>Số thực thể:</strong> <span id="org-total">0</span></div>
+                                        <div><strong>Tần suất từng thực thể:</strong>
+                                            <ul class="frequency-list" id="org-list"></ul>
+                                        </div>
+                                        <button class="save-button" onclick="saveEntities('ORG')">Lưu thực thể</button>
+                                    </div>
                                 </div>
                                 <div class="metric-dropdown">
-                                    <div class="metric-header" onclick="toggleEntity(this, 'MISC')">5.4. Khác (MISC) <span class="metric-arrow">▾</span></div>
-                                    <div class="metric-body entity-body" id="entity-MISC">Đang tải...</div>
+                                    <div class="metric-header" onclick="toggleEntity(this, 'MISC')">
+                                        5.4. Khác (MISC) <span class="metric-arrow">▾</span>
+                                    </div>
+                                    <div class="metric-body entity-body" id="entity-MISC">
+                                        <div><strong>Số thực thể:</strong> <span id="misc-total">0</span></div>
+                                        <div><strong>Tần suất từng thực thể:</strong>
+                                            <ul class="frequency-list" id="misc-list"></ul>
+                                        </div>
+                                        <button class="save-button" onclick="saveEntities('MISC')">Lưu thực thể</button>
+                                    </div>
                                 </div>
+                                <a href="{{ url_for('add_entity', title=title | urlencode, content=content | urlencode, article_id=article_id | urlencode) }}" class="save-button">Thêm thủ công</a>
                             </div>
-                            
                         </div>
                     </div>
 
                     <footer class="site-footer">
                         <div class="container">
-                            <div class="row">
+                           <div class="row">
                                 <div class="col-lg-12 col-12">
                                     <p class="copyright-text">Copyright © Mini Finance 2048 
                                     - Design: <a rel="sponsored" href="https://www.tooplate.com" target="_blank">Tooplate</a></p>
@@ -295,6 +360,51 @@
         <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
 
         <script>
+            async function highlightDictionaryWords() {
+                try {
+                    const article_id = document.getElementById('article_id') ? document.getElementById('article_id').value : '{{ article_id | safe }}';
+                    const contentElement = document.getElementById('article-content');
+                    const content = contentElement.innerText;
+
+                    const res = await fetch('/api/get_tokens_for_highlight', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ content, article_id })
+                    });
+                    const data = await res.json();
+                    if (!data.success) {
+                        console.error('Lỗi khi lấy token:', data.error);
+                        return;
+                    }
+
+                    const highlightTokens = data.tokens;
+                    let contentHtml = contentElement.innerHTML;
+
+                    const escapeHtml = (text) => {
+                        return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+                    };
+
+                    highlightTokens.sort((a, b) => b.start - a.start); 
+
+                    highlightTokens.forEach(({ token, start, end }) => {
+                        const before = contentHtml.slice(0, start);
+                        const after = contentHtml.slice(end);
+                        const highlighted = `<span class="highlight">${escapeHtml(token)}</span>`;
+                        contentHtml = before + highlighted + after;
+                    });
+
+                    contentElement.innerHTML = contentHtml;
+                } catch (err) {
+                    console.error('Lỗi khi bôi đen từ khóa:', err.message);
+                }
+            }
+
+            // Gọi hàm bôi đen khi trang được tải
+            document.addEventListener('DOMContentLoaded', highlightDictionaryWords);
+
+            // Gọi hàm bôi đen khi trang được tải
+            // document.addEventListener('DOMContentLoaded', highlightDictionaryWords);
+
             async function toggleDropdown(header, metric) {
                 const isOpen = header.classList.contains('open');
         
@@ -309,9 +419,9 @@
         
                 if (!['char-count', 'word-count', 'single-word-count', 'compound-word-count', 'entities'].includes(metric)) return;
 
-        
                 const title = document.querySelector('h3').innerText;
                 const content = document.querySelector('p').innerText;
+                const article_id = '{{ article_id | safe }}';
         
                 let url;
                 if (metric === 'char-count') {
@@ -320,20 +430,17 @@
                     url = '/api/analyze/special';
                 } else if (metric === 'single-word-count') {
                     url = '/api/analyze/single-words';
-                }
-                else if (metric === 'compound-word-count') {
+                } else if (metric === 'compound-word-count') {
                     url = '/api/analyze/compound-words';
-                }
-                else if (metric === 'entities') {
+                } else if (metric === 'entities') {
                     url = '/api/analyze/entities';
                 }
                 
-        
                 try {
                     const res = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title, content })
+                        body: JSON.stringify({ title, content, article_id })
                     });
                     const data = await res.json();
         
@@ -355,70 +462,148 @@
                         `;
                     } else if (metric === 'single-word-count') {
                         let freqHtml = '<ul class="frequency-list">';
-                        for (const [word, count] of data.single_word_frequencies) {
-                            freqHtml += `<li>${word}: ${count}</li>`;
+                        if (data.single_word_frequencies.length === 0) {
+                            freqHtml += '<li>Không có từ đơn mới nào.</li>';
+                        } else {
+                            for (const [word, count] of data.single_word_frequencies) {
+                                freqHtml += `<li><label><input type="checkbox" class="single-word-checkbox" value="${word}" data-frequency="${count}"> ${word}: ${count}</label></li>`;
+                            }
                         }
                         freqHtml += '</ul>';
                         body.innerHTML = `
                             <div><strong>Số từ đơn:</strong> ${data.single_word_count}</div>
                             <div><strong>Tần suất từng từ:</strong>${freqHtml}</div>
+                            <button class="save-button" onclick="saveSingleWords()">Lưu từ đơn</button>
+                            <a href="{{ url_for('add_single_word', title=title | urlencode, content=content | urlencode, article_id=article_id | urlencode) }}" class="save-button">Thêm thủ công</a>
                         `;
-                    }
-                    else if (metric === 'compound-word-count') {
+                    } else if (metric === 'compound-word-count') {
                         let freqHtml = '<ul class="frequency-list">';
-                        for (const [word, count] of data.compound_word_frequencies) {
-                            freqHtml += `<li>${word}: ${count}</li>`;
+                        if (data.compound_word_frequencies.length === 0) {
+                            freqHtml += '<li>Không có từ ghép mới nào.</li>';
+                        } else {
+                            for (const [word, count] of data.compound_word_frequencies) {
+                                freqHtml += `<li><label><input type="checkbox" class="compound-word-checkbox" value="${word}" data-frequency="${count}"> ${word}: ${count}</label></li>`;
+                            }
                         }
                         freqHtml += '</ul>';
                         body.innerHTML = `
                             <div><strong>Số từ ghép:</strong> ${data.compound_word_count}</div>
                             <div><strong>Tần suất từng từ:</strong>${freqHtml}</div>
+                            <button class="save-button" onclick="saveCompoundWords()">Lưu từ ghép</button>
+                            <a href="{{ url_for('add_compound_word', title=title | urlencode, content=content | urlencode, article_id=article_id | urlencode) }}" class="save-button">Thêm thủ công</a>
                         `;
-                    } 
-                    
+                    }
                 } catch (err) {
                     body.innerHTML = '<div class="text-danger">Lỗi khi phân tích</div>';
                 }
             }
-        </script>
-        <script>
+
+            async function saveCompoundWords() {
+                const checkboxes = document.querySelectorAll('.compound-word-checkbox:checked');
+                const selectedWords = Array.from(checkboxes).map(cb => ({
+                    keyword: cb.value,
+                    frequency: parseInt(cb.dataset.frequency)
+                }));
+
+                if (selectedWords.length === 0) {
+                    alert('Vui lòng chọn ít nhất một từ ghép để lưu.');
+                    return;
+                }
+
+                const title = document.querySelector('h3').innerText;
+                const content = document.querySelector('p').innerText;
+
+                try {
+                    const res = await fetch('/api/save_compound_words', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title, content, words: selectedWords })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        alert('Lưu từ ghép thành công!');
+                        location.reload();
+                    } else {
+                        alert('Lỗi khi lưu từ ghép: ' + data.error);
+                    }
+                } catch (err) {
+                    alert('Lỗi khi lưu từ ghép: ' + err.message);
+                }
+            }
+
             let entityDataCache = null;
-        
+
             async function toggleEntity(header, label) {
                 const isOpen = header.classList.contains('open');
                 
                 document.querySelectorAll('.entity-body').forEach(el => el.style.display = 'none');
                 document.querySelectorAll('.metric-header').forEach(el => el.classList.remove('open'));
-        
+
                 if (isOpen) return;
-        
+
                 header.classList.add('open');
                 const body = document.getElementById('entity-' + label);
                 body.style.display = 'block';
-        
-                if (entityDataCache) {
-                    renderEntityData(body, entityDataCache[label]);
+
+                // Nếu đã có dữ liệu trong cache, sử dụng lại
+                if (entityDataCache && entityDataCache.entities[label]) {
+                    renderEntityData(body, entityDataCache.entities[label], label);
                     return;
                 }
-        
+
                 const title = document.querySelector('h3').innerText;
                 const content = document.querySelector('p').innerText;
-        
+                const article_id = '{{ article_id | safe }}';
+
                 try {
                     const res = await fetch('/api/analyze/entities', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ title, content })
+                        body: JSON.stringify({ title, content, article_id })
                     });
                     const data = await res.json();
+                    
+                    // Lưu dữ liệu vào cache
                     entityDataCache = data;
-        
-                    renderEntityData(body, data[label]);
+
+                    renderEntityData(body, data.entities[label], label);
                 } catch (err) {
                     body.innerHTML = '<div class="text-danger">Lỗi khi phân tích</div>';
                 }
             }
-        
+            async function saveSingleWords() {
+                const checkboxes = document.querySelectorAll('.single-word-checkbox:checked');
+                const selectedWords = Array.from(checkboxes).map(cb => ({
+                    keyword: cb.value,
+                    frequency: parseInt(cb.dataset.frequency)
+                }));
+
+                if (selectedWords.length === 0) {
+                    alert('Vui lòng chọn ít nhất một từ đơn để lưu.');
+                    return;
+                }
+
+                const title = document.querySelector('h3').innerText;
+                const content = document.querySelector('p').innerText;
+                const article_id = '{{ article_id | safe }}';
+
+                try {
+                    const res = await fetch('/api/save_single_words', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title, content, words: selectedWords, article_id })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        alert('Lưu từ đơn thành công!');
+                        location.reload();
+                    } else {
+                        alert('Lỗi khi lưu từ đơn: ' + data.error);
+                    }
+                } catch (err) {
+                    alert('Lỗi khi lưu từ đơn: ' + err.message);
+                }
+            }
             function renderEntityData(container, dataList) {
                 if (!dataList || dataList.length === 0) {
                     container.innerHTML = '<div>Không có thực thể nào.</div>';
@@ -432,7 +617,107 @@
                 html += '</ul>';
                 container.innerHTML = html;
             }
+            async function toggleEntity(header, label) {
+                const isOpen = header.classList.contains('open');
+                
+                document.querySelectorAll('.entity-body').forEach(el => el.style.display = 'none');
+                document.querySelectorAll('.metric-header').forEach(el => el.classList.remove('open'));
+
+                if (isOpen) return;
+
+                header.classList.add('open');
+                const body = document.getElementById('entity-' + label);
+                body.style.display = 'block';
+
+                const title = document.querySelector('h3').innerText;
+                const content = document.querySelector('p').innerText;
+                const article_id = '{{ article_id | safe }}';
+
+                try {
+                    const res = await fetch('/api/analyze/entities', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title, content, article_id })
+                    });
+                    const data = await res.json();
+
+                    renderEntityData(body, data.entities[label], label);
+                } catch (err) {
+                    body.innerHTML = '<div class="text-danger">Lỗi khi phân tích</div>';
+                }
+            }
+
+            function renderEntityData(container, dataList, entityType) {
+                if (!dataList || dataList.length === 0) {
+                    container.innerHTML = `
+                        <div><strong>Số thực thể:</strong> 0</div>
+                        <div><strong>Tần suất từng thực thể:</strong>
+                            <ul class="frequency-list"><li>Không có thực thể nào.</li></ul>
+                        </div>
+                        <button class="save-button" onclick="saveEntities('${entityType}')">Lưu thực thể</button>
+                    `;
+                    return;
+                }
+
+                // Loại bỏ trùng lặp dựa trên entity
+                const uniqueEntities = [];
+                const seen = new Set();
+                dataList.forEach(item => {
+                    if (!seen.has(item.entity)) {
+                        seen.add(item.entity);
+                        uniqueEntities.push(item);
+                    }
+                });
+
+                let freqHtml = '<ul class="frequency-list">';
+                uniqueEntities.forEach(item => {
+                    freqHtml += `<li><label><input type="checkbox" class="entity-checkbox" value="${item.entity.toLowerCase()}" data-frequency="${item.frequency}" data-entity-type="${entityType}"> ${item.entity}: ${item.frequency}</label></li>`;
+                });
+                freqHtml += '</ul>';
+
+                container.innerHTML = `
+                    <div><strong>Số thực thể:</strong> ${uniqueEntities.length}</div>
+                    <div><strong>Tần suất từng thực thể:</strong>${freqHtml}</div>
+                    <button class="save-button" onclick="saveEntities('${entityType}')">Lưu thực thể</button>
+                `;
+            }
+
+            async function saveEntities(entityType) {
+                const checkboxes = document.querySelectorAll(`#entity-${entityType} .entity-checkbox:checked`);
+                const selectedEntities = Array.from(checkboxes).map(cb => ({
+                    entity: cb.value,
+                    frequency: parseInt(cb.dataset.frequency),
+                    entity_type: cb.dataset.entityType
+                }));
+
+                if (selectedEntities.length === 0) {
+                    alert('Vui lòng chọn ít nhất một thực thể để lưu.');
+                    return;
+                }
+
+                const title = document.querySelector('h3').innerText;
+                const content = document.querySelector('p').innerText;
+                const article_id = '{{ article_id | safe }}';
+
+                try {
+                    const res = await fetch('/api/save_entities', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title, content, entities: selectedEntities, article_id })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        alert('Lưu thực thể thành công!');
+                        // Làm mới trang với tham số ngẫu nhiên để tránh cache
+                        window.location.href = window.location.pathname + '?' + new URLSearchParams(window.location.search) + '&t=' + Date.now();
+                    } else {
+                        alert('Lỗi khi lưu thực thể: ' + data.error);
+                    }
+                } catch (err) {
+                    alert('Lỗi khi lưu thực thể: ' + err.message);
+                }
+            }
         </script>
-        
-    </body>
+    <script>
+        (function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93db2713cb1d854e',t:'MTc0Njg5ODEwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e182317978045a',t:'MTc0Njk2NDc0OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e1b58bfc1809f8',t:'MTc0Njk2Njg1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

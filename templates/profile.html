@@ -63,7 +63,6 @@
                 box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             }
             
-            
             .article-header {
                 margin-bottom: 15px;
             }
@@ -95,9 +94,15 @@
                 line-height: 1.6;
                 color: #000;
                 margin-bottom: 20px;
+                border: 1px solid #e0e0e0;
+                padding: 10px;
+                border-radius: 4px;
+                min-height: 200px;
             }
-            .article-content p {
-                margin-bottom: 10px;
+            .article-content[contenteditable="true"]:focus {
+                outline: none;
+                border-color: #007bff;
+                box-shadow: 0 0 5px rgba(0,123,255,0.3);
             }
             .article-source {
                 font-size: 0.95rem;
@@ -142,7 +147,6 @@
                 color: #fff !important;
                 font-weight: 600;
             }
-            
             .nav-link.active i {
                 color: #fff !important;
             }
@@ -152,11 +156,33 @@
                 font-weight: 400;
             }
             .article-action {
-                text-align: right;
+                text-align: center;
                 margin-top: 15px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
             }
-            
-            
+            .save-button {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 8px 16px;
+                cursor: pointer;
+                font-size: 0.95rem;
+            }
+            .save-button:hover {
+                background-color: #0056b3;
+            }
+            .action-right {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+            .button-wrapper {
+                text-align: right;
+                flex-grow: 1;
+            }
         </style>
     </head>
     
@@ -212,7 +238,6 @@
                     </div>
                 </nav>
                 
-
                 <main class="main-wrapper col-md-9 ms-sm-auto py-4 col-lg-9 px-md-4 border-start">
                     <div class="article-container">
                         <div class="article-header">
@@ -223,25 +248,23 @@
                             </div>
                         </div>
                     
-                        <div class="article-content">
-                            {{ content | safe }}
-                        </div>
+                        <div class="article-content" contenteditable="true" id="article-content">{{ content | safe }}</div>
                     
                         <div class="article-source">
                             <p><strong>Nguồn bài viết:</strong> <a href="{{ article_url | safe }}" target="_blank">{{ article_url | safe }}</a></p>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                            <a href="{{ url_for('articles') }}" class="back-link">Quay lại danh sách bài báo</a>
-                            <a href="{{ url_for('analyst', title=title | urlencode, content=content | urlencode) }}" class="back-link">Phân tích bài báo</a>
+                        <div class="button-wrapper">
+                            <button class="save-button" onclick="saveContent()">Lưu nội dung</button>
                         </div>
-                        
-                        
-                        
-                        
-
+                        <div class="article-action">
+                            <div>
+                                <a href="{{ url_for('articles') }}" class="back-link">Quay lại danh sách bài báo</a>
+                            </div>
+                            <div class="action-right">
+                                <a href="{{ url_for('analyst', title=title | urlencode, content=content | urlencode) }}" class="back-link">Phân tích bài báo</a>
+                            </div>
+                        </div>
                     </div>
-
-
                 </main>
             </div>
         </div>
@@ -251,6 +274,27 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <script src="js/custom.js"></script>
 
-        <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933baa8139136746',t:'MTc0NTIyNTc2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+        <script>
+            async function saveContent() {
+                const content = document.getElementById('article-content').innerHTML;
+                const title = document.querySelector('.article-title').innerText;
+                
+                try {
+                    const response = await fetch('/api/update_content', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title, content })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        alert('Nội dung đã được lưu thành công!');
+                    } else {
+                        alert('Lỗi khi lưu nội dung: ' + data.error);
+                    }
+                } catch (err) {
+                    alert('Lỗi khi lưu nội dung: ' + err.message);
+                }
+            }
+        </script>
     </body>
 </html>
