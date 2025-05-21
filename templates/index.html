@@ -63,6 +63,42 @@
                 border-radius: 4px;
                 font-size: 14px;
             }
+            .article-action {
+                text-align: center;
+                margin-top: 15px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .save-button {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 8px 16px;
+                cursor: pointer;
+                font-size: 0.95rem;
+            }
+            .save-button:hover {
+                background-color: #0056b3;
+            }
+            .action-right {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+            .button-wrapper {
+                text-align: right;
+                flex-grow: 1;
+            }
+              .back-link {
+                color: #007bff;
+                font-weight: bold;
+            }
+            .back-link:hover {
+                text-decoration: underline;
+                color: #0056b3; 
+            }
         </style>
     </head>
     
@@ -101,7 +137,13 @@
                                     <i class="bi-wallet me-2"></i>
                                     Article Data
                                 </a>
-                            </li>
+                            </li>   
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('transaction') }}">
+                                    <i class="bi-file-text me-2"></i>
+                                    Transactions Data
+                                </a>
+                            </li>                        
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('profile') }}">
                                     <i class="bi-person me-2"></i>
@@ -133,63 +175,15 @@
                             <li><strong>Quản lý từ khóa</strong>: Lưu trữ từ khóa với loại từ và ghi chú, tối ưu hóa việc phân loại và tra cứu.</li>
                             <li><strong>Giao diện hiện đại</strong>: Thiết kế responsive, tích hợp thanh điều hướng tiện lợi.</li>
                         </ul>
-
-                        <h2>Hướng dẫn triển khai</h2>
-                        <p>Để chạy Mini Finance trên máy cục bộ, thực hiện các bước sau:</p>
-                        <ol>
-                            <li><strong>Yêu cầu</strong>: Python 3.6+, PostgreSQL, và các thư viện <code>flask</code>, <code>flask_sqlalchemy</code>, <code>underthesea</code>, <code>psycopg2</code>.</li>
-                            <li><strong>Chuẩn bị môi trường</strong>:
-                                <ul>
-                                    <li>Sao chép các file <code>app.py</code>, <code>index.html</code>, <code>articles.html</code>, <code>profile.html</code> vào thư mục dự án.</li>
-                                    <li>Tạo thư mục <code>static</code> và <code>templates</code> cho CSS, JS, và HTML.</li>
-                                    <li>Cài đặt: <code>pip install flask flask_sqlalchemy underthesea psycopg2-binary</code>.</li>
-                                </ul>
-                            </li>
-                            <li><strong>Cấu hình PostgreSQL</strong>:
-                                <ul>
-                                    <li>Đăng nhập: <code>psql -U postgres</code>.</li>
-                                    <li>Tạo database: <code>CREATE DATABASE postgres;</code>.</li>
-                                    <li>Tạo bảng:
-                                        <pre>
-CREATE TABLE wallet (
-    id SERIAL PRIMARY KEY,
-    date VARCHAR(50) NOT NULL,
-    time VARCHAR(20) NOT NULL,
-    link VARCHAR(255),
-    description TEXT
-);
-CREATE TABLE keyword (
-    id SERIAL PRIMARY KEY,
-    word VARCHAR(255) UNIQUE NOT NULL,
-    loai_tu VARCHAR(50),
-    ghi_chu TEXT
-);
-                                        </pre>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li><strong>Cấu hình ứng dụng</strong>: Cập nhật chuỗi kết nối trong <code>app.py</code> (ví dụ: <code>postgresql://postgres:220201@localhost:5432/postgres</code>).</li>
-                            <li><strong>Khởi chạy</strong>: Chạy <code>python app.py</code> và truy cập <code>http://127.0.0.1:5000</code>.</li>
-                            <li><strong>Khám phá</strong>: Điều hướng đến <a href="{{ url_for('articles') }}">Article Data</a> hoặc <a href="{{ url_for('profile') }}">Analysis</a> để trải nghiệm.</li>
-                        </ol>
-                        <p><strong>Lưu ý</strong>:
-                            <ul>
-                                <li>Đảm bảo PostgreSQL đang hoạt động.</li>
-                                <li>Thêm dữ liệu mẫu: <code>INSERT INTO wallet (date, time, link, description) VALUES ('2025-04-17', '10:30', 'https://example.com', 'Mua sắm tại siêu thị Coopmart');</code>.</li>
-                            </ul>
-                        </p>
                     </div>
-
-                    <footer class="site-footer">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-lg-12 col-12">
-                                    <p class="copyright-text">Copyright © Mini Finance 2048 
-                                    - Design: <a rel="sponsored" href="https://www.tooplate.com" target="_blank">Tooplate</a></p>
-                                </div>
+                    <div class="article-action">
+                            <div>
+                                <a href="{{ url_for('articles') }}" class="back-link">Phân tích bài báo</a>
                             </div>
-                        </div>
-                    </footer>
+                            <div class="action-right">
+                                <a href="{{ url_for('transaction') }}" class="back-link">Phân tích giao dịch</a>
+                            </div>
+                    </div>
                 </main>
             </div>
         </div>
