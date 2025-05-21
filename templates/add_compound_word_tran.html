@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>Mini Finance - Thêm Từ Ghép Thủ Công</title>
+
+        <!-- CSS FILES -->      
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/bootstrap-icons.css') }}" rel="stylesheet">
+        <link href="{{ url_for('static', filename='css/tooplate-mini-finance.css') }}" rel="stylesheet">
+
+        <!-- Custom CSS -->
+        <style>
+            body {
+                font-family: 'Roboto', sans-serif;
+                background-color: #f8f9fa;
+            }
+            .sidebar .nav-link {
+                font-family: 'Unbounded', cursive;
+                font-size: 16px;
+                font-weight: 400;
+            }
+            .main-wrapper {
+                padding: 20px 40px;
+            }
+            .content-container {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+                max-height: 400px;
+                overflow-y: auto;
+                margin-bottom: 20px;
+            }
+            .content-container h3 {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #2c3e50;
+                margin-bottom: 15px;
+            }
+            .content-container p {
+                font-size: 1rem;
+                line-height: 1.6;
+                color: #34495e;
+            }
+            .highlight {
+                background-color: #333;
+                color: #fff;
+                padding: 2px 4px;
+                border-radius: 3px;
+            }
+            .form-container {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            }
+            .form-container label {
+                font-weight: 500;
+                margin-bottom: 5px;
+                display: block;
+            }
+            .form-container input {
+                margin-bottom: 10px;
+                height: 38px;
+                padding: 6px 12px;
+                width: 100%;
+            }
+            .form-container button {
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 8px 16px;
+                cursor: pointer;
+                font-size: 0.95rem;
+            }
+            .form-container button:hover {
+                background-color: #0056b3;
+            }
+            .back-link {
+                font-size: 0.95rem;
+                color: #007bff;
+                text-decoration: none;
+                margin-top: 10px;
+                display: inline-block;
+            }
+            .back-link:hover {
+                text-decoration: underline;
+            }
+            .site-footer {
+                text-align: center;
+                font-size: 0.85rem;
+                color: #666;
+                padding-top: 20px;
+                border-top: 1px solid #e0e0e0;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <header class="navbar sticky-top flex-md-nowrap">
+            <div class="col-md-3 col-lg-3 me-0 px-3 fs-6">
+                <a class="navbar-brand" href="{{ url_for('index') }}">
+                    <i class="bi-box"></i>
+                    Mini Finance
+                </a>
+            </div>
+            <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <form class="custom-form header-form ms-lg-3 ms-md-3 me-lg-auto me-md-auto order-2 order-lg-0 order-md-0" action="#" method="get" role="form">
+                <input class="form-control" name="search" type="text" placeholder="Search" aria-label="Search">
+            </form>
+            <div class="navbar-nav me-lg-2">
+                <div class="nav-item text-nowrap d-flex align-items-center"></div>
+            </div>
+        </header>
+
+        <div class="container-fluid">
+            <div class="row">
+                <nav id="sidebarMenu" class="col-md-3 col-lg-3 d-md-block sidebar collapse">
+                    <div class="position-sticky py-4 px-3 sidebar-sticky">
+                        <ul class="nav flex-column h-100">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('index') }}">
+                                    <i class="bi-house-fill me-2"></i>
+                                    Overview
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('articles') }}">
+                                    <i class="bi-wallet me-2"></i>
+                                    Article Data
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url_for('profile') }}">
+                                    <i class="bi-person me-2"></i>
+                                    Content Detail
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{{ url_for('analyst') }}">
+                                    <i class="bi-gear me-2"></i>
+                                    Analyst
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <main class="main-wrapper col-md-9 ms-sm-auto py-4 col-lg-9 px-md-4 border-start">
+                    <div class="title-group mb-3">
+                        <h1 class="h2 mb-0">Thêm Từ Ghép Thủ Công</h1>
+                    </div>
+
+                    <!-- Scrollable Content Area -->
+                    <div class="content-container">
+                        <p id="article-content">{{ content | safe }}</p>
+                    </div>
+
+                    <!-- Form to Add Compound Word -->
+                    <div class="form-container">
+                        <form id="add-compound-word-form">
+                            <label for="keyword">Từ ghép:</label>
+                            <input type="text" id="keyword" name="keyword" class="form-control" placeholder="Nhập từ ghép" required>
+                            <input type="hidden" id="article_id" name="article_id" value="{{ article_id }}">
+                            <button type="submit">Lưu từ ghép</button>
+                        </form>
+                        <a href="{{ url_for('analyst_tran', content=content | urlencode, article_id=article_id | urlencode) }}" class="back-link">Quay lại phân tích</a>
+                    </div>
+
+                    <footer class="site-footer">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-12 col-12">
+                                    <p class="copyright-text">Copyright © Mini Finance 2048 
+                                    - Design: <a rel="sponsored" href="https://www.tooplate.com" target="_blank">Tooplate</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </main>
+            </div>
+        </div>
+
+        <!-- JAVASCRIPT FILES -->
+        <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+
+        <script>
+            // Hàm bôi đen từ khóa trong nội dung
+         async function highlightDictionaryWords() {
+            try {
+                const article_id = document.getElementById('article_id') ? document.getElementById('article_id').value : '{{ article_id | safe }}';
+                const contentElement = document.getElementById('article-content');
+                const content = contentElement.innerText;
+
+                const res = await fetch('/api/get_tokens_for_highlight', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content, article_id })
+                });
+                const data = await res.json();
+                if (!data.success) {
+                    console.error('Lỗi khi lấy token:', data.error);
+                    return;
+                }
+
+                const highlightTokens = data.tokens;
+                let contentHtml = contentElement.innerHTML;
+
+                const escapeHtml = (text) => {
+                    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+                };
+
+                highlightTokens.sort((a, b) => b.start - a.start); // Sắp xếp theo vị trí giảm dần
+
+                highlightTokens.forEach(({ token, start, end }) => {
+                    const before = contentHtml.slice(0, start);
+                    const after = contentHtml.slice(end);
+                    const highlighted = `<span class="highlight">${escapeHtml(token)}</span>`;
+                    contentHtml = before + highlighted + after;
+                });
+
+                contentElement.innerHTML = contentHtml;
+            } catch (err) {
+                console.error('Lỗi khi bôi đen từ khóa:', err.message);
+            }
+        }
+
+        // Gọi hàm bôi đen khi trang được tải
+        document.addEventListener('DOMContentLoaded', highlightDictionaryWords);
+
+        // Xử lý form submit
+        document.getElementById("add-compound-word-form").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const keyword = document.getElementById("keyword").value.trim();
+            const article_id = document.getElementById("article_id").value;
+            const content = document.getElementById('article-content').innerText;
+
+            if (!keyword) {
+                alert("Vui lòng nhập từ ghép.");
+                return;
+            }
+
+            const res = await fetch("/api/manual_add_compound_word_tran", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ keyword, article_id, content })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                alert(`Đã thêm từ ghép thành công! Tần suất: ${data.frequency}`);
+                location.reload(); // Reload để cập nhật highlight
+            } else {
+                alert("Lỗi: " + data.error);
+            }
+        });
+        </script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94287b0f2f7cc7b9',t:'MTc0NzcwODk0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
